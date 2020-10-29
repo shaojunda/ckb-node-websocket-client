@@ -10,7 +10,7 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.get_version.version }}
+      version: ${{ steps.get_version.outputs.version }}
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - name: Checkout code
@@ -30,8 +30,8 @@ jobs:
           draft: true
           prerelease: false
       - name: Get version
-          id: get_version
-          run: echo ::set-output name=version::${GITHUB_REF/refs\/tags\//}
+        id: get_version
+        run: echo ::set-output name=version::${GITHUB_REF#refs/*/}
   publish:
     needs: release
     name: Upload Release Asset For ${{ matrix.os }}
