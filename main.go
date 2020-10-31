@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gorilla/websocket"
 	"github.com/shaojunda/ckb-node-websocket-client/global"
+	"github.com/shaojunda/ckb-node-websocket-client/internal/model"
 	"github.com/shaojunda/ckb-node-websocket-client/pkg/setting"
 	"log"
 	"net/url"
@@ -19,6 +20,11 @@ func init() {
 	err := setupSetting()
 	if err != nil {
 		log.Fatalf("init.setupSetting err: %v", err)
+	}
+
+	err = setupDBEngine()
+	if err != nil {
+		log.Fatalf("init.setupDBEngine err: %v", err)
 	}
 }
 
@@ -81,6 +87,16 @@ func setupSetting() error {
 		return err
 	}
 	err = s.ReadSection("Database", &global.DatabaseSetting)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func setupDBEngine() error {
+	var err error
+	global.DBEngine, err = model.NewDBEngine(global.DatabaseSetting)
 	if err != nil {
 		return err
 	}
