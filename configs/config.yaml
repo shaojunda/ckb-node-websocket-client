@@ -1,0 +1,6 @@
+Database:
+  DBType: postgresql
+  Username: postgres
+  Password: postgres
+  Host: localhost
+  DBName: ckb_explorer_development
