@@ -4,3 +4,7 @@ Database:
   Password: postgres
   Host: localhost
   DBName: ckb_explorer_development
+  Charset: utf8
+  sslmode: disable
+  MaxIdleConns: 10
+  MaxOpenConns: 30

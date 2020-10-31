@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/gorilla/websocket"
+	"github.com/shaojunda/ckb-node-websocket-client/global"
+	"github.com/shaojunda/ckb-node-websocket-client/pkg/setting"
 	"log"
 	"net/url"
 	"os"
@@ -11,6 +13,13 @@ import (
 
 type doneCode struct {
 	ExitCode int
+}
+
+func init() {
+	err := setupSetting()
+	if err != nil {
+		log.Fatalf("init.setupSetting err: %v", err)
+	}
 }
 
 func main() {
@@ -64,4 +73,17 @@ func main() {
 			return
 		}
 	}
+}
+
+func setupSetting() error {
+	s, err := setting.NewSetting()
+	if err != nil {
+		return err
+	}
+	err = s.ReadSection("Database", &global.DatabaseSetting)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
