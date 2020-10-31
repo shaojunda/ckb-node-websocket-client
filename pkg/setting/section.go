@@ -5,8 +5,10 @@ type DatabaseSettingS struct {
 	UserName     string
 	Password     string
 	Host         string
+	Port         string
 	DBName       string
 	Charset      string
+	SSLMode      string
 	MaxIdleConns int
 	MaxOpenConns int
 }

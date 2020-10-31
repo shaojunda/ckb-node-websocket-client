@@ -3,8 +3,9 @@ Database:
   Username: postgres
   Password: postgres
   Host: localhost
+  Port: 5432
   DBName: ckb_explorer_development
   Charset: utf8
-  sslmode: disable
+  SSLMode: disable
   MaxIdleConns: 10
   MaxOpenConns: 30
