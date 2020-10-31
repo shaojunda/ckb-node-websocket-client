@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/shaojunda/ckb-node-websocket-client/global"
 	"github.com/shaojunda/ckb-node-websocket-client/internal/model"
+	"github.com/shaojunda/ckb-node-websocket-client/pkg/logger"
 	"github.com/shaojunda/ckb-node-websocket-client/pkg/setting"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"log"
 	"net/url"
 	"os"
@@ -25,6 +28,11 @@ func init() {
 	err = setupDBEngine()
 	if err != nil {
 		log.Fatalf("init.setupDBEngine err: %v", err)
+	}
+
+	err = setupLogger()
+	if err != nil {
+		log.Fatalf("init.setupLogger err: %v", err)
 	}
 }
 
@@ -90,6 +98,10 @@ func setupSetting() error {
 	if err != nil {
 		return err
 	}
+	err = s.ReadSection("App", &global.AppSetting)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -100,6 +112,18 @@ func setupDBEngine() error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func setupLogger() error {
+	global.Logger = logger.NewLogger(&lumberjack.Logger{
+		Filename:   fmt.Sprintf("%s/%s%s", global.AppSetting.LogSavePath, global.AppSetting.LogFileName, global.AppSetting.LogFileExt),
+		MaxSize:    600,
+		MaxAge:     10,
+		MaxBackups: 3,
+		LocalTime:  true,
+	}, "", log.LstdFlags).WithCaller(2)
 
 	return nil
 }
