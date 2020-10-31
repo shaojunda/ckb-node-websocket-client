@@ -7,5 +7,6 @@ import (
 
 var (
 	DatabaseSetting *setting.DatabaseSettingS
+	AppSetting      *setting.AppSettingS
 	Logger          *logger.Logger
 )

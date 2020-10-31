@@ -9,3 +9,7 @@ Database:
   SSLMode: disable
   MaxIdleConns: 10
   MaxOpenConns: 30
+App:
+  LogSavePath: storage/logs
+  LogFileName: app
+  LogFileExt: .log
