@@ -1,10 +1,14 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/shaojunda/ckb-node-websocket-client/global"
 	"github.com/shaojunda/ckb-node-websocket-client/internal/model"
+	"github.com/shaojunda/ckb-node-websocket-client/internal/rpc"
+	"github.com/shaojunda/ckb-node-websocket-client/internal/service"
 	"github.com/shaojunda/ckb-node-websocket-client/pkg/logger"
 	"github.com/shaojunda/ckb-node-websocket-client/pkg/setting"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -51,7 +55,7 @@ func main() {
 
 	done := make(chan doneCode)
 
-	err = c.WriteMessage(websocket.TextMessage, []byte(`{"id": 2, "jsonrpc": "2.0", "method": "subscribe", "params": ["new_tip_header"]}`))
+	err = c.WriteMessage(websocket.TextMessage, []byte(`{"id": 2, "jsonrpc": "2.0", "method": "subscribe", "params": ["new_transaction"]}`))
 	if err != nil {
 		log.Println("write error: ", err)
 	}
@@ -64,6 +68,25 @@ func main() {
 				done <- doneCode{1}
 				return
 			}
+			var response rpc.NewTransactionSubscriptionResponse
+			err = json.Unmarshal(message, &response)
+			if err != nil {
+				log.Println(err)
+			}
+			var result rpc.NewTransactionSubscriptionResult
+			err = json.Unmarshal(json.RawMessage(response.Params.Result), &result)
+			if err != nil {
+				log.Println(err)
+			}
+			svc := service.New(context.Background())
+			err = svc.CreatePoolTransactionEntry(result.Transaction, result.Fee, result.Cycles, result.Size)
+			if err != nil {
+				global.Logger.Errorf("PoolTransactionEntry creation error: %v", err)
+			}
+
+			//log.Printf("final: %+v", p)
+
+			//log.Printf("r: %+v", r)
 			log.Printf("recv: %s\n", message)
 		}
 	}()
