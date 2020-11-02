@@ -79,7 +79,7 @@ func main() {
 				log.Println(err)
 			}
 			svc := service.New(context.Background())
-			err = svc.CreatePoolTransactionEntry(result.Transaction, result.Fee, result.Cycles, result.Size)
+			err = svc.CreateOrUpdatePoolTransactionEntry(result.Transaction, result.Fee, result.Cycles, result.Size)
 			if err != nil {
 				global.Logger.Errorf("PoolTransactionEntry creation error: %v", err)
 			}
