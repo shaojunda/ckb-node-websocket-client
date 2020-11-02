@@ -1,11 +1,14 @@
 package model
 
-import "gorm.io/datatypes"
+import (
+	"gorm.io/datatypes"
+	"gorm.io/gorm"
+)
 
 type PoolTransactionEntry struct {
 	*Model
 	CellDeps       datatypes.JSON `json:"cell_deps"`
-	TxHash         []byte         `json:"tx_hash"`
+	TxHash         string         `json:"tx_hash"`
 	HeaderDeps     datatypes.JSON `json:"header_deps"`
 	Inputs         datatypes.JSON `json:"inputs"`
 	Outputs        datatypes.JSON `json:"outputs"`
@@ -19,4 +22,31 @@ type PoolTransactionEntry struct {
 	TxSize         uint64         `json:"tx_size"`
 	DisplayInputs  datatypes.JSON `json:"display_inputs"`
 	DisplayOutputs datatypes.JSON `json:"display_outputs"`
+}
+
+func (t PoolTransactionEntry) Create(db *gorm.DB) (*PoolTransactionEntry, error) {
+	if err := db.Create(&t).Error; err != nil {
+		return nil, err
+	}
+	return &t, nil
+}
+
+func (t PoolTransactionEntry) Get(db *gorm.DB) (PoolTransactionEntry, error) {
+	var poolTx PoolTransactionEntry
+	db = db.Where("id = ?", t.ID)
+	err := db.First(&poolTx).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return poolTx, err
+	}
+	return poolTx, nil
+}
+
+func (t PoolTransactionEntry) GetByTxHash(db *gorm.DB) (PoolTransactionEntry, error) {
+	var poolTx PoolTransactionEntry
+	db = db.Where("tx_hash = ?", t.TxHash)
+	err := db.First(&poolTx).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return poolTx, err
+	}
+	return poolTx, nil
 }

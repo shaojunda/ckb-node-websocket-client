@@ -19,6 +19,9 @@ type NewTransactionSubscriptionParams struct {
 
 type NewTransactionSubscriptionResult struct {
 	Transaction PoolTransactionEntry `json:"transaction"`
+	Fee         hexutil.Uint64       `json:"fee"`
+	Cycles      hexutil.Uint64       `json:"cycles"`
+	Size        hexutil.Uint64       `json:"size"`
 }
 
 type PoolTransactionEntry struct {
@@ -41,8 +44,8 @@ type CellDep struct {
 }
 
 type OutPoint struct {
-	TxHash model.Hash `json:"tx_hash"`
-	Index  uint       `json:"index"`
+	TxHash model.Hash   `json:"tx_hash"`
+	Index  hexutil.Uint `json:"index"`
 }
 
 type CellInput struct {
@@ -63,33 +66,61 @@ type Script struct {
 }
 
 func (t PoolTransactionEntry) ToPoolTransactionEntryModel() (model.PoolTransactionEntry, error) {
-	cellDeps, err := toCellDeps(t.CellDeps)
+	cellDeps, err := t.toCellDeps()
 	if err != nil {
 		return model.PoolTransactionEntry{}, err
 	}
+	headerDeps, err := t.toHeaderDeps()
+	if err != nil {
+		return model.PoolTransactionEntry{}, err
+	}
+	inputs, err := t.toInputs()
+	if err != nil {
+		return model.PoolTransactionEntry{}, err
+	}
+	outputs, err := t.toOutputs()
+	if err != nil {
+		return model.PoolTransactionEntry{}, err
+	}
+	outputsData, err := t.toOutputsData()
+	if err != nil {
+		return model.PoolTransactionEntry{}, nil
+	}
+	witnesses, err := t.toWitnesses()
+	if err != nil {
+		return model.PoolTransactionEntry{}, nil
+	}
 	return model.PoolTransactionEntry{
 		CellDeps:       cellDeps,
-		TxHash:         nil,
-		HeaderDeps:     nil,
-		Inputs:         nil,
-		Outputs:        nil,
-		OutputsData:    nil,
-		Version:        0,
-		Witnesses:      nil,
-		TransactionFee: 0,
+		TxHash:         t.Hash.String(),
+		HeaderDeps:     headerDeps,
+		Inputs:         inputs,
+		Outputs:        outputs,
+		OutputsData:    outputsData,
+		Version:        uint(t.Version),
+		Witnesses:      witnesses,
+		TransactionFee: uint64(t.Fee),
 		BlockNumber:    0,
 		BlockTimestamp: 0,
-		Cycles:         0,
-		TxSize:         0,
+		Cycles:         uint64(t.Cycles),
+		TxSize:         uint64(t.Size),
 		DisplayInputs:  nil,
 		DisplayOutputs: nil,
 	}, nil
 }
 
-func toCellDeps(deps []CellDep) (datatypes.JSON, error) {
-	result := make([]model.CellDep, len(deps))
-	for i := 0; i < len(deps); i++ {
-		dep := deps[i]
+func (t PoolTransactionEntry) toHeaderDeps() (datatypes.JSON, error) {
+	bytes, err := json.Marshal(t.HeaderDeps)
+	if err != nil {
+		return datatypes.JSON([]byte{}), err
+	}
+	return datatypes.JSON(bytes), nil
+}
+
+func (t PoolTransactionEntry) toCellDeps() (datatypes.JSON, error) {
+	result := make([]model.CellDep, len(t.CellDeps))
+	for i := 0; i < len(t.CellDeps); i++ {
+		dep := t.CellDeps[i]
 		result[i] = model.CellDep{
 			OutPoint: model.OutPoint{
 				TxHash: dep.OutPoint.TxHash,
@@ -100,7 +131,68 @@ func toCellDeps(deps []CellDep) (datatypes.JSON, error) {
 	}
 	bytes, err := json.Marshal(result)
 	if err != nil {
-		return []byte{}, err
+		return datatypes.JSON([]byte{}), err
+	}
+	return datatypes.JSON(bytes), nil
+}
+
+func (t PoolTransactionEntry) toInputs() (datatypes.JSON, error) {
+	result := make([]model.CellInput, len(t.Inputs))
+	for i := 0; i < len(t.Inputs); i++ {
+		input := t.Inputs[i]
+		result[i] = model.CellInput{
+			Since: uint64(input.Since),
+			PreviousOutput: model.OutPoint{
+				TxHash: input.PreviousOutput.TxHash,
+				Index:  uint(input.PreviousOutput.Index),
+			},
+		}
+	}
+	bytes, err := json.Marshal(result)
+	if err != nil {
+		return datatypes.JSON([]byte{}), err
+	}
+	return datatypes.JSON(bytes), nil
+}
+func (t PoolTransactionEntry) toOutputs() (datatypes.JSON, error) {
+	result := make([]model.CellOutput, len(t.Outputs))
+	for i := 0; i < len(t.Outputs); i++ {
+		output := t.Outputs[i]
+		result[i] = model.CellOutput{
+			Capacity: uint64(output.Capacity),
+			Lock: &model.Script{
+				CodeHash: output.Lock.CodeHash,
+				HashType: output.Lock.HashType,
+				Args:     output.Lock.Args.String(),
+			},
+		}
+		if output.Type != nil {
+			result[i].Type = &model.Script{
+				CodeHash: output.Type.CodeHash,
+				HashType: output.Type.HashType,
+				Args:     output.Type.Args.String(),
+			}
+		}
+	}
+	bytes, err := json.Marshal(result)
+	if err != nil {
+		return datatypes.JSON([]byte{}), err
+	}
+	return datatypes.JSON(bytes), nil
+}
+
+func (t PoolTransactionEntry) toOutputsData() (datatypes.JSON, error) {
+	bytes, err := json.Marshal(t.OutputsData)
+	if err != nil {
+		return datatypes.JSON([]byte{}), err
+	}
+	return datatypes.JSON(bytes), nil
+}
+
+func (t PoolTransactionEntry) toWitnesses() (datatypes.JSON, error) {
+	bytes, err := json.Marshal(t.Witnesses)
+	if err != nil {
+		return datatypes.JSON([]byte{}), err
 	}
 	return datatypes.JSON(bytes), nil
 }
