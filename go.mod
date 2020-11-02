@@ -3,7 +3,7 @@ module github.com/shaojunda/ckb-node-websocket-client
 go 1.14
 
 require (
-	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/ethereum/go-ethereum v1.9.23
 	github.com/gorilla/websocket v1.4.2
 	github.com/magiconair/properties v1.8.4 // indirect
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
@@ -17,7 +17,6 @@ require (
 	golang.org/x/text v0.3.4 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
-	gopkg.in/yaml.v2 v2.3.0 // indirect
 	gorm.io/datatypes v1.0.0
 	gorm.io/driver/postgres v1.0.5
 	gorm.io/gorm v1.20.5
