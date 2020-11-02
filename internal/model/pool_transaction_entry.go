@@ -25,6 +25,35 @@ type PoolTransactionEntry struct {
 	DisplayOutputs datatypes.JSON `json:"display_outputs"`
 }
 
+type UdtInfo struct {
+	Symbol    string `json:"symbol"`
+	Amount    string `json:"amount"`
+	Decimal   string `json:"decimal"`
+	TypeHash  string `json:"type_hash"`
+	Published bool   `json:"published"`
+}
+
+type CellInfo struct {
+	Lock Script `json:"lock"`
+	Type Script `json:"type"`
+	Data string `json:"data"`
+}
+
+type DisplayInput struct {
+	FromCellbase    bool     `json:"from_cellbase"`
+	Capacity        uint64   `json:"capacity"`
+	AddressHash     string   `json:"address_hash"`
+	GeneratedTxHash string   `json:"generated_tx_hash"`
+	CellIndex       string   `json:"cell_index"`
+	CellType        string   `json:"cell_type"`
+	CellInfo        CellInfo `json:"cell_info"`
+	UdtInfo         UdtInfo  `json:"udt_info"`
+}
+
+func (t PoolTransactionEntry) BuildDisplayInputs() datatypes.JSON {
+	return []byte{}
+}
+
 func (t PoolTransactionEntry) Create(db *gorm.DB) (*PoolTransactionEntry, error) {
 	if err := db.Create(&t).Error; err != nil {
 		return nil, err
