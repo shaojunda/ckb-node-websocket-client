@@ -3,6 +3,7 @@ package model
 import (
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type PoolTransactionEntry struct {
@@ -49,4 +50,12 @@ func (t PoolTransactionEntry) GetByTxHash(db *gorm.DB) (PoolTransactionEntry, er
 		return poolTx, err
 	}
 	return poolTx, nil
+}
+
+func (t PoolTransactionEntry) Upsert(db *gorm.DB) error {
+	return db.Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "tx_hash"}},
+		DoUpdates: clause.AssignmentColumns([]string{"cell_deps", "header_deps", "inputs", "outputs", "outputs_data", "version",
+			"witnesses", "transaction_fee", "block_number", "block_timestamp", "cycles", "tx_size", "display_inputs", "display_outputs", "updated_at"}),
+	}).Create(&t).Error
 }
