@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
+	ckbRPC "github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/shaojunda/ckb-node-websocket-client/global"
 	"github.com/shaojunda/ckb-node-websocket-client/internal/model"
 	"github.com/shaojunda/ckb-node-websocket-client/internal/rpc"
@@ -37,6 +38,11 @@ func init() {
 	err = setupLogger()
 	if err != nil {
 		log.Fatalf("init.setupLogger err: %v", err)
+	}
+
+	err = setupCKBClient()
+	if err != nil {
+		log.Fatalf("init.setupCKBClient err: %v", err)
 	}
 }
 
@@ -125,6 +131,10 @@ func setupSetting() error {
 	if err != nil {
 		return err
 	}
+	err = s.ReadSection("RPC", &global.RPCSetting)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -147,6 +157,16 @@ func setupLogger() error {
 		MaxBackups: 3,
 		LocalTime:  true,
 	}, "", log.LstdFlags).WithCaller(2)
+
+	return nil
+}
+
+func setupCKBClient() error {
+	client, err := ckbRPC.Dial(global.RPCSetting.URL)
+	if err != nil {
+		return err
+	}
+	global.CKBClient = client
 
 	return nil
 }
