@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/nervosnetwork/ckb-sdk-go/address"
 	ckbTypes "github.com/nervosnetwork/ckb-sdk-go/types"
+	ckbUtils "github.com/nervosnetwork/ckb-sdk-go/utils"
 	"github.com/shaojunda/ckb-node-websocket-client/global"
 	"github.com/shaojunda/ckb-node-websocket-client/internal/model"
 	"github.com/shaojunda/ckb-node-websocket-client/internal/rpc"
@@ -39,7 +40,7 @@ func (svc Service) CreateOrUpdatePoolTransactionEntry(entry rpc.PoolTransactionE
 	if err != nil {
 		return err
 	}
-	displayInputs, err := buildDisplayInputs(entry)
+	displayInputs, err := buildDisplayInputs(svc, entry)
 	if err != nil {
 		return err
 	}
@@ -48,7 +49,7 @@ func (svc Service) CreateOrUpdatePoolTransactionEntry(entry rpc.PoolTransactionE
 	return svc.dao.CreateOrUpdatePoolTransactionEntry(&poolTx)
 }
 
-func buildDisplayInputs(entry rpc.PoolTransactionEntry) (datatypes.JSON, error) {
+func buildDisplayInputs(svc Service, entry rpc.PoolTransactionEntry) (datatypes.JSON, error) {
 	displayInputs := make([]model.DisplayInput, 0)
 	for _, input := range entry.Inputs {
 		previousOutput := input.PreviousOutput
@@ -81,7 +82,11 @@ func buildDisplayInputs(entry rpc.PoolTransactionEntry) (datatypes.JSON, error) 
 			CellInfo:        buildCellInfo(output, outputData),
 		}
 		if cellType == "udt" {
-			displayInput.UdtInfo = buildUdtInfo(output)
+			udtInfo, err := buildUdtInfo(svc, output, outputData)
+			if err != nil {
+				return datatypes.JSON{}, err
+			}
+			displayInput.UdtInfo = udtInfo
 		}
 
 		displayInputs = append(displayInputs, displayInput)
@@ -94,8 +99,27 @@ func buildDisplayInputs(entry rpc.PoolTransactionEntry) (datatypes.JSON, error) 
 	return datatypes.JSON(displayInputBytes), nil
 }
 
-func buildUdtInfo(output *ckbTypes.CellOutput) *model.UdtInfo {
-	return nil
+func buildUdtInfo(svc Service, output *ckbTypes.CellOutput, outputData []byte) (*model.UdtInfo, error) {
+	typeHash, err := output.Type.Hash()
+	if err != nil {
+		return nil, err
+	}
+	udt, err := svc.dao.GetUdtByTypeHash(typeHash.String())
+	if err != nil {
+		return nil, err
+	}
+	udtAmount, err := ckbUtils.ParseSudtAmount(outputData)
+	if err != nil {
+		return nil, err
+	}
+	udtInfo := model.UdtInfo{
+		Symbol:    udt.Symbol,
+		Amount:    udtAmount.String(),
+		Decimal:   strconv.FormatInt(int64(udt.Decimal), 10),
+		TypeHash:  udt.TypeHash,
+		Published: udt.Published,
+	}
+	return &udtInfo, nil
 }
 
 func buildCellInfo(output *ckbTypes.CellOutput, outputData []byte) *model.CellInfo {
