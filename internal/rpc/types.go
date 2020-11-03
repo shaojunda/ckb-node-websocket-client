@@ -3,6 +3,7 @@ package rpc
 import (
 	"encoding/json"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	ckbTypes "github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/shaojunda/ckb-node-websocket-client/internal/model"
 	"gorm.io/datatypes"
 )
@@ -26,8 +27,8 @@ type NewTransactionSubscriptionResult struct {
 
 type PoolTransactionEntry struct {
 	CellDeps    []CellDep       `json:"cell_deps"`
-	Hash        model.Hash      `json:"hash"`
-	HeaderDeps  []model.Hash    `json:"header_deps"`
+	Hash        ckbTypes.Hash   `json:"hash"`
+	HeaderDeps  []ckbTypes.Hash `json:"header_deps"`
 	Inputs      []CellInput     `json:"inputs"`
 	Outputs     []CellOutput    `json:"outputs"`
 	OutputsData []hexutil.Bytes `json:"outputs_data"`
@@ -44,8 +45,8 @@ type CellDep struct {
 }
 
 type OutPoint struct {
-	TxHash model.Hash   `json:"tx_hash"`
-	Index  hexutil.Uint `json:"index"`
+	TxHash ckbTypes.Hash `json:"tx_hash"`
+	Index  hexutil.Uint  `json:"index"`
 }
 
 type CellInput struct {
@@ -60,7 +61,7 @@ type CellOutput struct {
 }
 
 type Script struct {
-	CodeHash model.Hash           `json:"code_hash"`
+	CodeHash ckbTypes.Hash        `json:"code_hash"`
 	HashType model.ScriptHashType `json:"hash_type"`
 	Args     hexutil.Bytes        `json:"args"`
 }
@@ -112,7 +113,7 @@ func (t PoolTransactionEntry) ToPoolTransactionEntryModel() (model.PoolTransacti
 func (t PoolTransactionEntry) toHeaderDeps() (datatypes.JSON, error) {
 	bytes, err := json.Marshal(t.HeaderDeps)
 	if err != nil {
-		return datatypes.JSON([]byte{}), err
+		return datatypes.JSON{}, err
 	}
 	return datatypes.JSON(bytes), nil
 }
@@ -131,8 +132,9 @@ func (t PoolTransactionEntry) toCellDeps() (datatypes.JSON, error) {
 	}
 	bytes, err := json.Marshal(result)
 	if err != nil {
-		return datatypes.JSON([]byte{}), err
+		return datatypes.JSON{}, err
 	}
+
 	return datatypes.JSON(bytes), nil
 }
 
@@ -150,7 +152,7 @@ func (t PoolTransactionEntry) toInputs() (datatypes.JSON, error) {
 	}
 	bytes, err := json.Marshal(result)
 	if err != nil {
-		return datatypes.JSON([]byte{}), err
+		return datatypes.JSON{}, err
 	}
 	return datatypes.JSON(bytes), nil
 }
@@ -176,7 +178,7 @@ func (t PoolTransactionEntry) toOutputs() (datatypes.JSON, error) {
 	}
 	bytes, err := json.Marshal(result)
 	if err != nil {
-		return datatypes.JSON([]byte{}), err
+		return datatypes.JSON{}, err
 	}
 	return datatypes.JSON(bytes), nil
 }
@@ -184,7 +186,7 @@ func (t PoolTransactionEntry) toOutputs() (datatypes.JSON, error) {
 func (t PoolTransactionEntry) toOutputsData() (datatypes.JSON, error) {
 	bytes, err := json.Marshal(t.OutputsData)
 	if err != nil {
-		return datatypes.JSON([]byte{}), err
+		return datatypes.JSON{}, err
 	}
 	return datatypes.JSON(bytes), nil
 }
@@ -192,7 +194,7 @@ func (t PoolTransactionEntry) toOutputsData() (datatypes.JSON, error) {
 func (t PoolTransactionEntry) toWitnesses() (datatypes.JSON, error) {
 	bytes, err := json.Marshal(t.Witnesses)
 	if err != nil {
-		return datatypes.JSON([]byte{}), err
+		return datatypes.JSON{}, err
 	}
 	return datatypes.JSON(bytes), nil
 }

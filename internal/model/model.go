@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	ckbTypes "github.com/nervosnetwork/ckb-sdk-go/types"
 	"github.com/shaojunda/ckb-node-websocket-client/pkg/setting"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -46,12 +47,12 @@ type CellDep struct {
 }
 
 type OutPoint struct {
-	TxHash Hash `json:"tx_hash"`
-	Index  uint `json:"index"`
+	TxHash ckbTypes.Hash `json:"tx_hash"`
+	Index  uint          `json:"index"`
 }
 
 type Script struct {
-	CodeHash Hash           `json:"code_hash"`
+	CodeHash ckbTypes.Hash  `json:"code_hash"`
 	HashType ScriptHashType `json:"hash_type"`
 	Args     string         `json:"args"`
 }
