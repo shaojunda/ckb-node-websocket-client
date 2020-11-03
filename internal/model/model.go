@@ -38,12 +38,9 @@ func NewDBEngine(databaseSetting *setting.DatabaseSettingS) (*gorm.DB, error) {
 	return db, nil
 }
 
-type DepType string
-type ScriptHashType string
-
 type CellDep struct {
-	OutPoint OutPoint `json:"out_point"`
-	DepType  DepType  `json:"dep_type"`
+	OutPoint OutPoint         `json:"out_point"`
+	DepType  ckbTypes.DepType `json:"dep_type"`
 }
 
 type OutPoint struct {
@@ -52,9 +49,9 @@ type OutPoint struct {
 }
 
 type Script struct {
-	CodeHash ckbTypes.Hash  `json:"code_hash"`
-	HashType ScriptHashType `json:"hash_type"`
-	Args     string         `json:"args"`
+	CodeHash ckbTypes.Hash           `json:"code_hash"`
+	HashType ckbTypes.ScriptHashType `json:"hash_type"`
+	Args     string                  `json:"args"`
 }
 
 type CellInput struct {

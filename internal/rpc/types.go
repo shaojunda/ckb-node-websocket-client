@@ -40,8 +40,8 @@ type PoolTransactionEntry struct {
 }
 
 type CellDep struct {
-	OutPoint OutPoint      `json:"out_point"`
-	DepType  model.DepType `json:"dep_type"`
+	OutPoint OutPoint         `json:"out_point"`
+	DepType  ckbTypes.DepType `json:"dep_type"`
 }
 
 type OutPoint struct {
@@ -61,9 +61,9 @@ type CellOutput struct {
 }
 
 type Script struct {
-	CodeHash ckbTypes.Hash        `json:"code_hash"`
-	HashType model.ScriptHashType `json:"hash_type"`
-	Args     hexutil.Bytes        `json:"args"`
+	CodeHash ckbTypes.Hash           `json:"code_hash"`
+	HashType ckbTypes.ScriptHashType `json:"hash_type"`
+	Args     hexutil.Bytes           `json:"args"`
 }
 
 func (t PoolTransactionEntry) ToPoolTransactionEntryModel() (model.PoolTransactionEntry, error) {
