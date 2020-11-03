@@ -2,13 +2,11 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 	ckbRPC "github.com/nervosnetwork/ckb-sdk-go/rpc"
 	"github.com/shaojunda/ckb-node-websocket-client/global"
 	"github.com/shaojunda/ckb-node-websocket-client/internal/model"
-	"github.com/shaojunda/ckb-node-websocket-client/internal/rpc"
 	"github.com/shaojunda/ckb-node-websocket-client/internal/service"
 	"github.com/shaojunda/ckb-node-websocket-client/pkg/logger"
 	"github.com/shaojunda/ckb-node-websocket-client/pkg/setting"
@@ -51,19 +49,21 @@ func main() {
 	signal.Notify(interrupt, os.Interrupt)
 
 	u := url.URL{Scheme: "ws", Host: "localhost:28114"}
-	log.Printf("connecting to %s\n", u.String())
+	global.Logger.Infof("connecting to %s\n", u.String())
 
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
-		log.Fatal("dial error: ", err)
+		global.Logger.Fatal("dial error: ", err)
 	}
 	defer c.Close()
 
 	done := make(chan doneCode)
 
-	err = c.WriteMessage(websocket.TextMessage, []byte(`{"id": 2, "jsonrpc": "2.0", "method": "subscribe", "params": ["new_transaction"]}`))
+	svc := service.New(context.Background())
+	err = svc.Subscribe(c, "new_transaction")
 	if err != nil {
-		log.Println("write error: ", err)
+		global.Logger.Panic("write error: ", err)
+		os.Exit(1)
 	}
 
 	go func() {
@@ -74,26 +74,8 @@ func main() {
 				done <- doneCode{1}
 				return
 			}
-			var response rpc.NewTransactionSubscriptionResponse
-			err = json.Unmarshal(message, &response)
-			if err != nil {
-				log.Println(err)
-			}
-			var result rpc.NewTransactionSubscriptionResult
-			err = json.Unmarshal(json.RawMessage(response.Params.Result), &result)
-			if err != nil {
-				log.Println(err)
-			}
-			svc := service.New(context.Background())
-			err = svc.CreateOrUpdatePoolTransactionEntry(result.Transaction, result.Fee, result.Cycles, result.Size)
-			if err != nil {
-				global.Logger.Errorf("PoolTransactionEntry creation error: %v", err)
-			}
-
-			//log.Printf("final: %+v", p)
-
-			//log.Printf("r: %+v", r)
-			log.Printf("recv: %s\n", message)
+			log.Printf("receive: %s", string(message))
+			svc.SavePoolTransactionEntry(message)
 		}
 	}()
 
