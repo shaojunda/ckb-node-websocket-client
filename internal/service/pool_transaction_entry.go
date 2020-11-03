@@ -44,9 +44,69 @@ func (svc Service) CreateOrUpdatePoolTransactionEntry(entry rpc.PoolTransactionE
 	if err != nil {
 		return err
 	}
-
 	poolTx.DisplayInputs = displayInputs
+	displayOutputs, err := buildDisplayOutputs(svc, entry)
+	poolTx.DisplayOutputs = displayOutputs
 	return svc.dao.CreateOrUpdatePoolTransactionEntry(&poolTx)
+}
+
+func buildDisplayOutputs(svc Service, entry rpc.PoolTransactionEntry) (datatypes.JSON, error) {
+	displayOutputs := make([]model.DisplayOutput, 0)
+	for i, output := range entry.Outputs {
+		var mode address.Mode
+		if global.RPCSetting.Mode == "mainnet" {
+			mode = address.Mainnet
+		} else {
+			mode = address.Testnet
+		}
+		addressHash, err := address.Generate(mode, &ckbTypes.Script{
+			CodeHash: output.Lock.CodeHash,
+			HashType: output.Lock.HashType,
+			Args:     output.Lock.Args,
+		})
+		if err != nil {
+			return datatypes.JSON{}, err
+		}
+		outputData := entry.OutputsData[i]
+		cellOutput := ckbTypes.CellOutput{
+			Capacity: uint64(output.Capacity),
+			Lock: &ckbTypes.Script{
+				CodeHash: output.Lock.CodeHash,
+				HashType: output.Lock.HashType,
+				Args:     output.Lock.Args,
+			},
+		}
+		if output.Type != nil {
+			cellOutput.Type = &ckbTypes.Script{
+				CodeHash: cellOutput.Type.CodeHash,
+				HashType: cellOutput.Type.HashType,
+				Args:     cellOutput.Type.Args,
+			}
+		}
+		cellType := getCellType(&cellOutput, outputData)
+		displayOutput := model.DisplayOutput{
+			Capacity:    cellOutput.Capacity,
+			AddressHash: addressHash,
+			Status:      "live",
+			CellType:    cellType,
+		}
+		if cellType == "udt" {
+			udtInfo, err := buildUdtInfo(svc, &cellOutput, outputData)
+			if err != nil {
+				return datatypes.JSON{}, err
+			}
+			displayOutput.UdtInfo = udtInfo
+		}
+
+		displayOutputs = append(displayOutputs, displayOutput)
+	}
+
+	displayOutputBytes, err := json.Marshal(displayOutputs)
+	if err != nil {
+		return datatypes.JSON{}, err
+	}
+
+	return datatypes.JSON(displayOutputBytes), nil
 }
 
 func buildDisplayInputs(svc Service, entry rpc.PoolTransactionEntry) (datatypes.JSON, error) {
