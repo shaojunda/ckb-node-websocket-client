@@ -34,24 +34,20 @@ type UdtInfo struct {
 }
 
 type CellInfo struct {
-	Lock Script `json:"lock"`
-	Type Script `json:"type"`
-	Data string `json:"data"`
+	Lock *Script `json:"lock,omitempty"`
+	Type *Script `json:"type,omitempty"`
+	Data string  `json:"data"`
 }
 
 type DisplayInput struct {
-	FromCellbase    bool     `json:"from_cellbase"`
-	Capacity        uint64   `json:"capacity"`
-	AddressHash     string   `json:"address_hash"`
-	GeneratedTxHash string   `json:"generated_tx_hash"`
-	CellIndex       string   `json:"cell_index"`
-	CellType        string   `json:"cell_type"`
-	CellInfo        CellInfo `json:"cell_info"`
-	UdtInfo         UdtInfo  `json:"udt_info"`
-}
-
-func (t PoolTransactionEntry) BuildDisplayInputs() datatypes.JSON {
-	return []byte{}
+	FromCellbase    bool      `json:"from_cellbase"`
+	Capacity        uint64    `json:"capacity"`
+	AddressHash     string    `json:"address_hash"`
+	GeneratedTxHash string    `json:"generated_tx_hash"`
+	CellIndex       string    `json:"cell_index"`
+	CellType        string    `json:"cell_type"`
+	CellInfo        *CellInfo `json:"cell_info,omitempty"`
+	UdtInfo         *UdtInfo  `json:"udt_info,omitempty"`
 }
 
 func (t PoolTransactionEntry) Create(db *gorm.DB) (*PoolTransactionEntry, error) {
