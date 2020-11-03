@@ -72,6 +72,7 @@ func main() {
 			_, message, err := c.ReadMessage()
 			if err != nil {
 				done <- doneCode{1}
+				global.Logger.Fatal("node error: ", err)
 				return
 			}
 			log.Printf("receive: %s", string(message))
