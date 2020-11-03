@@ -13,3 +13,5 @@ App:
   LogSavePath: storage/logs
   LogFileName: app
   LogFileExt: .log
+RPC:
+  URL: "http://localhost:8114"
