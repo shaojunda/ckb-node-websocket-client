@@ -7,6 +7,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/magiconair/properties v1.8.4 // indirect
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
+	github.com/nervosnetwork/ckb-sdk-go v0.0.0-20201015053143-b22f752efca4
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/spf13/afero v1.4.1 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
