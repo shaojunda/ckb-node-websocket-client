@@ -135,6 +135,10 @@ func setupSetting() error {
 	if err != nil {
 		return err
 	}
+	err = s.ReadSection("SystemCodeHash", &global.SystemCodeHash)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

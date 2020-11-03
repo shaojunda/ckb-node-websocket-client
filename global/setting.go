@@ -12,4 +12,5 @@ var (
 	Logger          *logger.Logger
 	CKBClient       rpc.Client
 	RPCSetting      *setting.RPCSettingS
+	SystemCodeHash  *setting.SystemCodeHashS
 )

@@ -15,3 +15,7 @@ App:
   LogFileExt: .log
 RPC:
   URL: "http://localhost:8114"
+  Mode: "mainnet"
+SystemCodeHash:
+  Dao: "0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e"
+  Sudt: "0x5e7a36a77e68eecc013dfa2fe6a23f3b6c344b04005808694ae6dd45eea4cfd5"

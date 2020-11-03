@@ -20,7 +20,13 @@ type AppSettingS struct {
 }
 
 type RPCSettingS struct {
-	URL string
+	URL  string
+	Mode string
+}
+
+type SystemCodeHashS struct {
+	Dao  string
+	Sudt string
 }
 
 func (s *Setting) ReadSection(k string, v interface{}) error {
