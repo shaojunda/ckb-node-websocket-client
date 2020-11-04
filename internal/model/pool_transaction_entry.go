@@ -51,12 +51,13 @@ type DisplayInput struct {
 }
 
 type DisplayOutput struct {
-	Capacity       uint64   `json:"capacity"`
-	AddressHash    string   `json:"address_hash"`
-	Status         string   `json:"status"`
-	ConsumedTxHash string   `json:"consumed_tx_hash"`
-	CellType       string   `json:"cell_type"`
-	UdtInfo        *UdtInfo `json:"udt_info,omitempty"`
+	Capacity       uint64    `json:"capacity"`
+	AddressHash    string    `json:"address_hash"`
+	Status         string    `json:"status"`
+	ConsumedTxHash string    `json:"consumed_tx_hash"`
+	CellType       string    `json:"cell_type"`
+	CellInfo       *CellInfo `json:"cell_info,omitempty"`
+	UdtInfo        *UdtInfo  `json:"udt_info,omitempty"`
 }
 
 func (t PoolTransactionEntry) Create(db *gorm.DB) (*PoolTransactionEntry, error) {

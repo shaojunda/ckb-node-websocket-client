@@ -78,9 +78,9 @@ func buildDisplayOutputs(svc Service, entry rpc.PoolTransactionEntry) (datatypes
 		}
 		if output.Type != nil {
 			cellOutput.Type = &ckbTypes.Script{
-				CodeHash: cellOutput.Type.CodeHash,
-				HashType: cellOutput.Type.HashType,
-				Args:     cellOutput.Type.Args,
+				CodeHash: output.Type.CodeHash,
+				HashType: output.Type.HashType,
+				Args:     output.Type.Args,
 			}
 		}
 		cellType := getCellType(&cellOutput, outputData)
@@ -89,6 +89,7 @@ func buildDisplayOutputs(svc Service, entry rpc.PoolTransactionEntry) (datatypes
 			AddressHash: addressHash,
 			Status:      "live",
 			CellType:    cellType,
+			CellInfo:    buildCellInfo(&cellOutput, outputData),
 		}
 		if cellType == "udt" {
 			udtInfo, err := buildUdtInfo(svc, &cellOutput, outputData)
@@ -176,7 +177,7 @@ func buildUdtInfo(svc Service, output *ckbTypes.CellOutput, outputData []byte) (
 		Symbol:    udt.Symbol,
 		Amount:    udtAmount.String(),
 		Decimal:   strconv.FormatInt(int64(udt.Decimal), 10),
-		TypeHash:  udt.TypeHash,
+		TypeHash:  typeHash.String(),
 		Published: udt.Published,
 	}
 	return &udtInfo, nil
