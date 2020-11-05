@@ -18,8 +18,8 @@ type Model struct {
 func NewDBEngine(databaseSetting *setting.DatabaseSettingS) (*gorm.DB, error) {
 	var dsn string
 	if databaseSetting.DBType == "postgresql" {
-		dsn = fmt.Sprintf("user=%s password=%s dbname=%s port=%s sslmode=%s",
-			databaseSetting.UserName, databaseSetting.Password,
+		dsn = fmt.Sprintf("host =%s user=%s password=%s dbname=%s port=%s sslmode=%s",
+			databaseSetting.Host, databaseSetting.UserName, databaseSetting.Password,
 			databaseSetting.DBName, databaseSetting.Port, databaseSetting.SSLMode,
 		)
 	}
