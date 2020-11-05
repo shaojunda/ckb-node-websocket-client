@@ -20,8 +20,9 @@ type AppSettingS struct {
 }
 
 type RPCSettingS struct {
-	URL  string
-	Mode string
+	URL          string
+	Mode         string
+	WebSocketURL string
 }
 
 type SystemCodeHashS struct {

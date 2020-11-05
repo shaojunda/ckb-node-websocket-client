@@ -48,7 +48,7 @@ func main() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	u := url.URL{Scheme: "ws", Host: "localhost:28114"}
+	u := url.URL{Scheme: "ws", Host: global.RPCSetting.WebSocketURL}
 	global.Logger.Infof("connecting to %s\n", u.String())
 
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
