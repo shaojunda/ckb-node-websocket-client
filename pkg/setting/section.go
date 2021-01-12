@@ -26,8 +26,8 @@ type RPCSettingS struct {
 }
 
 type SystemCodeHashS struct {
-	Dao  string
-	Sudt string
+	Dao   string
+	Sudts []string
 }
 
 func (s *Setting) ReadSection(k string, v interface{}) error {
