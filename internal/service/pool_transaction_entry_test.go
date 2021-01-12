@@ -31,8 +31,8 @@ func TestGetCellTypeReturnNormal(t *testing.T) {
 
 func TestGetCellTypeReturnNervosDaoDeposit(t *testing.T) {
 	global.SystemCodeHash = &setting.SystemCodeHashS{
-		Dao:  "0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e",
-		Sudt: "",
+		Dao:   "0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e",
+		Sudts: []string{""},
 	}
 	args, err := hexutil.Decode("0x3954acece65096bfa81258983ddb83915fc56bd8")
 	if err != nil {
@@ -61,8 +61,8 @@ func TestGetCellTypeReturnNervosDaoDeposit(t *testing.T) {
 
 func TestGetCellTypeReturnNervosDaoWithdrawing(t *testing.T) {
 	global.SystemCodeHash = &setting.SystemCodeHashS{
-		Dao:  "0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e",
-		Sudt: "",
+		Dao:   "0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e",
+		Sudts: []string{""},
 	}
 	args, err := hexutil.Decode("0x3954acece65096bfa81258983ddb83915fc56bd8")
 	if err != nil {
@@ -91,8 +91,8 @@ func TestGetCellTypeReturnNervosDaoWithdrawing(t *testing.T) {
 
 func TestGetCellTypeReturnUdt(t *testing.T) {
 	global.SystemCodeHash = &setting.SystemCodeHashS{
-		Dao:  "0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e",
-		Sudt: "0x5e7a36a77e68eecc013dfa2fe6a23f3b6c344b04005808694ae6dd45eea4cfd5",
+		Dao:   "0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e",
+		Sudts: []string{"0x5e7a36a77e68eecc013dfa2fe6a23f3b6c344b04005808694ae6dd45eea4cfd5"},
 	}
 	args, err := hexutil.Decode("0x3954acece65096bfa81258983ddb83915fc56bd8")
 	if err != nil {
@@ -121,8 +121,8 @@ func TestGetCellTypeReturnUdt(t *testing.T) {
 
 func TestGetCellTypeReturnNormalWhenDataIsInvalid(t *testing.T) {
 	global.SystemCodeHash = &setting.SystemCodeHashS{
-		Dao:  "0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e",
-		Sudt: "0x5e7a36a77e68eecc013dfa2fe6a23f3b6c344b04005808694ae6dd45eea4cfd5",
+		Dao:   "0x82d76d1b75fe2fd9a27dfbaa65a039221a380d76c926f378d3f81cf3e7e13f2e",
+		Sudts: []string{"0x5e7a36a77e68eecc013dfa2fe6a23f3b6c344b04005808694ae6dd45eea4cfd5"},
 	}
 	args, err := hexutil.Decode("0x3954acece65096bfa81258983ddb83915fc56bd8")
 	if err != nil {

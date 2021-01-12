@@ -207,20 +207,25 @@ func getCellType(output *ckbTypes.CellOutput, outputData []byte) string {
 	if output.Type == nil {
 		return "normal"
 	}
-	switch output.Type.CodeHash.String() {
-	case global.SystemCodeHash.Dao:
+	codeHash := output.Type.CodeHash.String()
+	if codeHash == global.SystemCodeHash.Dao {
 		if bytes.Compare(outputData, make([]byte, 8)) == 0 {
 			return "nervos_dao_deposit"
 		} else {
 			return "nervos_dao_withdrawing"
 		}
-	case global.SystemCodeHash.Sudt:
-		if len(outputData) >= MinSudtAmountByteSize {
-			return "udt"
-		} else {
-			return "normal"
-		}
-	default:
+	} else if isSudt(codeHash, outputData) {
+		return "udt"
+	} else {
 		return "normal"
 	}
+}
+
+func isSudt(codeHash string, outputData []byte) bool {
+	for _, sudtCodeHash := range global.SystemCodeHash.Sudts {
+		if codeHash == sudtCodeHash && len(outputData) >= MinSudtAmountByteSize {
+			return true
+		}
+	}
+	return false
 }
