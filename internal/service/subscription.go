@@ -16,7 +16,7 @@ func (svc Service) Subscribe(c *websocket.Conn, topic string) error {
 	}
 	err := c.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"id": 2, "jsonrpc": "2.0", "method": "subscribe", "params": ["%s"]}`, topic)))
 	if err != nil {
-		global.Logger.Errorf("write error: ", err)
+		global.Logger.Errorf("write error: %v", err)
 	}
 	return err
 }
