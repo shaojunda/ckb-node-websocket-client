@@ -75,7 +75,6 @@ func main() {
 				global.Logger.Fatal("node error: ", err)
 				return
 			}
-			log.Printf("receive: %s", string(message))
 			svc.SavePoolTransactionEntry(message)
 		}
 	}()
