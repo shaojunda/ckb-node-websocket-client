@@ -68,7 +68,6 @@ func buildDisplayOutputs(svc Service, entry rpc.PoolTransactionEntry) (datatypes
 			Args:     output.Lock.Args,
 		})
 		if err != nil {
-			global.Logger.Errorf("address generate error: %v", err)
 			return datatypes.JSON{}, err
 		}
 		outputData := entry.OutputsData[i]
@@ -98,7 +97,6 @@ func buildDisplayOutputs(svc Service, entry rpc.PoolTransactionEntry) (datatypes
 		if cellType == "udt" {
 			udtInfo, err := buildUdtInfo(svc, &cellOutput, outputData)
 			if err != nil {
-				global.Logger.Errorf("buildUdtInfo error: %v", err)
 				return datatypes.JSON{}, err
 			}
 			displayOutput.UdtInfo = udtInfo
@@ -109,7 +107,6 @@ func buildDisplayOutputs(svc Service, entry rpc.PoolTransactionEntry) (datatypes
 
 	displayOutputBytes, err := json.Marshal(displayOutputs)
 	if err != nil {
-		global.Logger.Errorf("displayOutputs marshal error: %v", err)
 		return datatypes.JSON{}, err
 	}
 
@@ -169,17 +166,14 @@ func buildDisplayInputs(svc Service, entry rpc.PoolTransactionEntry) (datatypes.
 func buildUdtInfo(svc Service, output *ckbTypes.CellOutput, outputData []byte) (*model.UdtInfo, error) {
 	typeHash, err := output.Type.Hash()
 	if err != nil {
-		global.Logger.Errorf("typeHash error: %v", err)
 		return nil, err
 	}
 	udt, err := svc.dao.GetUdtByTypeHash(typeHash.String())
 	if err != nil {
-		global.Logger.Errorf("GetUdtByTypeHash: %v", err)
 		return nil, err
 	}
 	udtAmount, err := ckbUtils.ParseSudtAmount(outputData)
 	if err != nil {
-		global.Logger.Errorf("outputData: %v, ParseSudtAmount: %v", outputData, err)
 		return nil, err
 	}
 	udtInfo := model.UdtInfo{

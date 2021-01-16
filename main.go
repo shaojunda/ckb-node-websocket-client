@@ -142,7 +142,7 @@ func setupLogger() error {
 		MaxAge:     10,
 		MaxBackups: 3,
 		LocalTime:  true,
-	}, "", log.LstdFlags).WithCaller(0)
+	}, "", log.LstdFlags).WithCaller(2)
 
 	return nil
 }
