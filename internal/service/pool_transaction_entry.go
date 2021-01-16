@@ -46,6 +46,9 @@ func (svc Service) CreateOrUpdatePoolTransactionEntry(entry rpc.PoolTransactionE
 	}
 	poolTx.DisplayInputs = displayInputs
 	displayOutputs, err := buildDisplayOutputs(svc, entry)
+	if err != nil {
+		return err
+	}
 	poolTx.DisplayOutputs = displayOutputs
 	return svc.dao.CreateOrUpdatePoolTransactionEntry(&poolTx)
 }
