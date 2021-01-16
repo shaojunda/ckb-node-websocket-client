@@ -68,6 +68,7 @@ func buildDisplayOutputs(svc Service, entry rpc.PoolTransactionEntry) (datatypes
 			Args:     output.Lock.Args,
 		})
 		if err != nil {
+			global.Logger.Errorf("address generate error: %v", err)
 			return datatypes.JSON{}, err
 		}
 		outputData := entry.OutputsData[i]
@@ -97,6 +98,7 @@ func buildDisplayOutputs(svc Service, entry rpc.PoolTransactionEntry) (datatypes
 		if cellType == "udt" {
 			udtInfo, err := buildUdtInfo(svc, &cellOutput, outputData)
 			if err != nil {
+				global.Logger.Errorf("buildUdtInfo error: %v", err)
 				return datatypes.JSON{}, err
 			}
 			displayOutput.UdtInfo = udtInfo
@@ -107,6 +109,7 @@ func buildDisplayOutputs(svc Service, entry rpc.PoolTransactionEntry) (datatypes
 
 	displayOutputBytes, err := json.Marshal(displayOutputs)
 	if err != nil {
+		global.Logger.Errorf("displayOutputs marshal error: %v", err)
 		return datatypes.JSON{}, err
 	}
 
