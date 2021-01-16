@@ -169,14 +169,17 @@ func buildDisplayInputs(svc Service, entry rpc.PoolTransactionEntry) (datatypes.
 func buildUdtInfo(svc Service, output *ckbTypes.CellOutput, outputData []byte) (*model.UdtInfo, error) {
 	typeHash, err := output.Type.Hash()
 	if err != nil {
+		global.Logger.Errorf("typeHash error: %v", err)
 		return nil, err
 	}
 	udt, err := svc.dao.GetUdtByTypeHash(typeHash.String())
 	if err != nil {
+		global.Logger.Errorf("GetUdtByTypeHash: %v", err)
 		return nil, err
 	}
 	udtAmount, err := ckbUtils.ParseSudtAmount(outputData)
 	if err != nil {
+		global.Logger.Errorf("outputData: %v, ParseSudtAmount: %v", outputData, err)
 		return nil, err
 	}
 	udtInfo := model.UdtInfo{
