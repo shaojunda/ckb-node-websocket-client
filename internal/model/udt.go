@@ -1,6 +1,8 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Udt struct {
 	*Model
@@ -15,7 +17,7 @@ type Udt struct {
 	IconFile             string `json:"icon_file"`
 	OperatorWebsite      string `json:"operator_website"`
 	AddressCount         uint64 `json:"address_count"`
-	TotalAmount          uint64 `json:"total_amount"`
+	TotalAmount          string `json:"total_amount"`
 	UdtType              int32  `json:"udt_type"`
 	Published            bool   `json:"published"`
 	BlockTimestamp       uint64 `json:"block_timestamp"`
