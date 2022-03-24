@@ -28,4 +28,4 @@ EXPOSE 8080
 
 USER nonroot:nonroot
 
-ENTRYPOINT ["/docker-gs-ping"]
+CMD /ckb-node-websocket-client
